@@ -4,9 +4,31 @@
     box-sizing: border-box;
 }
 
-header {
+#listaSuperheroes {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-evenly;
     background-color: bisque;
+}
+
+#listaSuperheroes li {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 31.25rem;
+    margin: 1.25rem .625rem;
+}
+
+#listaSuperheroes li button{
+    width: 100%;
+    height: 100%;
+
+}
+#victoriasTotales {
+    text-align: center;
+}
+
+.textCenter {
+    text-align: center;
 }

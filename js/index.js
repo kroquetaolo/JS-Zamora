@@ -1,4 +1,4 @@
-let superheroes = [
+const superheroes = [
     {
         nombre: 'Iron Man',
         poder: 92,
@@ -66,10 +66,44 @@ let superheroes = [
     }
 ];
 
-function randomHeroe(){
-    
-    const randomNumber = Math.floor(Math.random() * superheroes.length);
-    return superheroes[randomNumber];
+const rayo = {
+    nombre: 'McQueen',
+    poder: 100,
+    ataques: ['Cuchau', 'FIIIÑAAAUUUUUN', 'BRRRMMM BRRMMM']
+}
+
+const superheroesListaHTML = document.getElementById('listaSuperheroes');
+
+let victoriasTotalesHTML = document.getElementById(`victoriasTotales`);
+victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
+
+for(const heroe of superheroes) {
+    const {nombre,ataques} = heroe;
+    let lista = document.createElement('li');
+    lista.innerHTML = 
+    `
+    <button> 
+        <h2> ${nombre} </h2>
+        <h3> PODERES </h3>
+        <p> ${ataques[0]} | ${ataques[1]} |  ${ataques[2]} </p>
+        <p id="victorias-${nombre}">Victorias: ${getVictoriasPorHeroe(nombre)}</p>
+    </button>
+    `
+    lista.addEventListener("click", function(){
+        PELEA(heroe)
+        const victoriasElement = document.getElementById(`victorias-${nombre}`);
+        victoriasElement.textContent = `Victorias: ${getVictoriasPorHeroe(nombre)}`;
+        victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
+    });
+    superheroesListaHTML.appendChild(lista);
+}
+
+
+function randomHeroe(heroe){
+    let superheroesCopia = [...superheroes];
+    superheroesCopia.splice(superheroes.indexOf(heroe), 1)
+    const randomNumber = Math.floor(Math.random() * superheroesCopia.length);
+    return superheroesCopia[randomNumber];
 }
 
 function ataqueRandom(heroe) {
@@ -77,50 +111,47 @@ function ataqueRandom(heroe) {
     return heroe.ataques[index];
 }
 
-function heroePorNombre(nombre) {
-    const nombreBuscado = nombre.toLowerCase();
-    for (let i = 0; i < superheroes.length; i++) {
-        const nombreSuperheroe = superheroes[i].nombre.toLowerCase();
-        if (nombreSuperheroe === nombreBuscado) {
-        return superheroes[i];
-        }
-    }
-    return null;
-}
-
 function compararPoderes(heroe1, heroe2) {
     let heroes = {};
-    if(heroe1.poder > heroe2.poder) {
-        heroes.ganador = heroe1;
-        heroes.perdedor = heroe2;
-    } else {
-        heroes.ganador = heroe2;
-        heroes.perdedor = heroe1;
-    }
+    heroe1.poder > heroe2.poder ? (heroes.ganador = heroe1, heroes.perdedor = heroe2, heroes.usuario = true) : (heroes.ganador = heroe2, heroes.perdedor = heroe1, heroes.usuario = false);
     return heroes;
 }
 
-const nombres = superheroes.reduce((acumulador, superheroe, index) => {
-    if (index === 0) {
-        return superheroe.nombre;
-    } else {
-        return acumulador + ', ' + superheroe.nombre;
-    }
-}, '');
+function PELEA(heroeUsuario) {
+    const heroeConsola = randomHeroe(heroeUsuario);
+    const batalla = compararPoderes(heroeUsuario, heroeConsola);
+    const GANADOR = batalla.ganador;
+    const PERDEDOR = batalla.perdedor;
+    console.log(`${GANADOR.nombre} le ganará a ${PERDEDOR.nombre} ? ${batalla.usuario}`);
 
-let elegirHeroe = prompt(`Elige tu campeón: " ${nombres}`);
-let heroeUsuario = heroePorNombre(elegirHeroe);
-let heroeConsola = randomHeroe()
-
-while(!heroeUsuario && elegirHeroe !== null) {
-    elegirHeroe = prompt(`Debe ser un heroe de estos: ${nombres}`);
-    heroeUsuario = heroePorNombre(elegirHeroe); 
+    batalla.usuario ? (nuevaVictoria(heroeUsuario), 
+        alert(`Excelente! ${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`)) :
+        alert(`OH no! ${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`);
 }
 
-let GANADOR = compararPoderes(heroeUsuario, heroeConsola).ganador;
-let PERDEDOR = compararPoderes(heroeUsuario, heroeConsola).perdedor;
-alert(`${heroeUsuario.nombre} se va a enfrentar a ${heroeConsola.nombre}`)
+function nuevaVictoria(heroeUsuario) {
+    let victoriasTotales = localStorage.getItem('victoriasTotales') ? JSON.parse(localStorage.getItem('victoriasTotales')) : {};
+    let victoriasPorHeroe = localStorage.getItem('victoriasPorHeroe') ? JSON.parse(localStorage.getItem('victoriasPorHeroe')) : {};
 
-alert(`${PERDEDOR.nombre} ataca con su "${ataqueRandom(PERDEDOR)}" pero ${GANADOR.nombre} lo evita usando su "${ataqueRandom(GANADOR)}"`)
+    victoriasTotales.total = victoriasTotales.total ? victoriasTotales.total + 1 : 1;
 
-alert(`OH no! ${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su "${ataqueRandom(GANADOR)}"`)
+    if (victoriasPorHeroe[heroeUsuario.nombre]) {
+        victoriasPorHeroe[heroeUsuario.nombre]++;
+    } else {
+        victoriasPorHeroe[heroeUsuario.nombre] = 1;
+    }
+
+    localStorage.setItem('victoriasTotales', JSON.stringify(victoriasTotales));
+    localStorage.setItem('victoriasPorHeroe', JSON.stringify(victoriasPorHeroe));
+    
+}
+
+function getVictoriasPorHeroe(nombreHeroe) {
+    let victoriasPorHeroe = localStorage.getItem('victoriasPorHeroe') ? JSON.parse(localStorage.getItem('victoriasPorHeroe')) : {};
+    return victoriasPorHeroe[nombreHeroe] || 0;
+}
+
+function getVictoriasTotales() {
+    let victoriasTotales = localStorage.getItem('victoriasTotales') ? JSON.parse(localStorage.getItem('victoriasTotales')) : {};
+    return victoriasTotales.total || 0;
+}
