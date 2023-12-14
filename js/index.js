@@ -85,8 +85,8 @@ for(const heroe of superheroes) {
     <button> 
         <h2> ${nombre} </h2>
         <h3> PODERES </h3>
-        <p> ${ataques[0]} | ${ataques[1]} |  ${ataques[2]} </p>
-        <p id="victorias-${nombre}">Victorias: ${getVictoriasPorHeroe(nombre)}</p>
+        <p class="ataques"> ${ataques[0]} ~ ${ataques[1]} ~  ${ataques[2]} </p>
+        <p class="victorias" id="victorias-${nombre}">Victorias: ${getVictoriasPorHeroe(nombre)}</p>
     </button>
     `
     lista.addEventListener("click", function(){

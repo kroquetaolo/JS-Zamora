@@ -1,7 +1,11 @@
+/*#211D33 #494559 #8468F2 #79748C #8778BF*/
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+}
+body {
+    background-color: #a0a0a0;
 }
 
 #listaSuperheroes {
@@ -9,7 +13,8 @@
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-evenly;
-    background-color: bisque;
+    background-color: #211D33;
+    margin-top: 1.875rem;
 }
 
 #listaSuperheroes li {
@@ -17,18 +22,46 @@
     justify-content: center;
     text-align: center;
     width: 31.25rem;
-    margin: 1.25rem .625rem;
+    margin: 10px 5px;
 }
 
 #listaSuperheroes li button{
     width: 100%;
     height: 100%;
-
+    background-color: #1b1b1b;
+    border: none;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
 }
+
+#listaSuperheroes li button:hover{
+    background-color: #303030;
+}
+
 #victoriasTotales {
     text-align: center;
 }
 
 .textCenter {
     text-align: center;
+}
+
+#listaSuperheroes h2 {
+    color: #ff0048;
+}
+#listaSuperheroes h3 {
+    color: #ff6933;
+}
+.ataques {
+    color: #ede89d;
+}
+
+.victorias {
+    color: #19b5a5;
 }
