@@ -112,9 +112,10 @@ function ataqueRandom(heroe) {
 }
 
 function compararPoderes(heroe1, heroe2) {
-    let heroes = {};
-    heroe1.poder > heroe2.poder ? (heroes.ganador = heroe1, heroes.perdedor = heroe2, heroes.usuario = true) : (heroes.ganador = heroe2, heroes.perdedor = heroe1, heroes.usuario = false);
-    return heroes;
+    const [ganador, perdedor] = heroe1.poder > heroe2.poder ? [heroe1, heroe2] : [heroe2, heroe1];
+    const usuarioGana = heroe1.poder > heroe2.poder;
+
+    return { ganador, perdedor, usuario: usuarioGana };
 }
 
 function PELEA(heroeUsuario) {
