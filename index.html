@@ -5,13 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="./css/style.css">
+    <script src="https://kit.fontawesome.com/267b35900f.js" crossorigin="anonymous"></script>
+
+    <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js "></script>
+    
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
 </head>
 <body>
     <H1>LUCHAS INCREIBLES <p id="victoriasTotales"></p></H1>
     <h2 class="textCenter">Elige a un personaje para luchar</h2>
     <section>
         <ul id="listaSuperheroes"></ul>
+        <div id="enfrentamientoMensaje">
+            <div class="cargando">
+                <img src="./assets/pelea.gif" alt="">
+                <p>Enfrentamiento en curso!</p>
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+        </div>
     </section>
+
     <script src="./js/index.js"></script>
 </body>
 </html>

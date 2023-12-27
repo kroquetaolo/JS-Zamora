@@ -78,26 +78,29 @@ let victoriasTotalesHTML = document.getElementById(`victoriasTotales`);
 victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
 
 for(const heroe of superheroes) {
-    const {nombre,ataques} = heroe;
-    let lista = document.createElement('li');
+    const {nombre, poder, ataques} = heroe;
+    const lista = document.createElement('li');
+    const fuerza = poder >= 88 ? 'fuerte' : 'débil';
+
     lista.innerHTML = 
     `
-    <button> 
+    <button class="tippy" data-tippy-content="<strong>golpea ${fuerza}</strong> ">
         <h2> ${nombre} </h2>
         <h3> PODERES </h3>
-        <p class="ataques"> ${ataques[0]} ~ ${ataques[1]} ~  ${ataques[2]} </p>
+        <p class="ataques"> ${ataques.join(' ~ ')} </p>
         <p class="victorias" id="victorias-${nombre}">Victorias: ${getVictoriasPorHeroe(nombre)}</p>
     </button>
-    `
+    `;
+
     lista.addEventListener("click", function(){
-        PELEA(heroe)
+        PELEA(heroe);
         const victoriasElement = document.getElementById(`victorias-${nombre}`);
         victoriasElement.textContent = `Victorias: ${getVictoriasPorHeroe(nombre)}`;
         victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
     });
-    superheroesListaHTML.appendChild(lista);
-}
 
+    superheroesListaHTML.appendChild(lista)
+}
 
 function randomHeroe(heroe){
     let superheroesCopia = [...superheroes];
@@ -124,10 +127,24 @@ function PELEA(heroeUsuario) {
     const GANADOR = batalla.ganador;
     const PERDEDOR = batalla.perdedor;
     console.log(`${GANADOR.nombre} le ganará a ${PERDEDOR.nombre} ? ${batalla.usuario}`);
-
-    batalla.usuario ? (nuevaVictoria(heroeUsuario), 
-        alert(`Excelente! ${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`)) :
-        alert(`OH no! ${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`);
+    mostrarEnfrentamientoMensaje();
+    setTimeout(() => {
+        ocultarEnfrentamientoMensaje();
+        batalla.usuario ? 
+        (nuevaVictoria(heroeUsuario), 
+        Swal.fire({
+            title: '¡Excelente!',
+            text: `${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`,
+            icon: 'success',
+            confirmButtonText: '¡Entendido!'
+        })) :
+        Swal.fire({
+            title: '¡OH no!',
+            text: `${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`,
+            icon: 'error',
+            confirmButtonText: '¡Entendido!'
+        });
+    }, 6000);
 }
 
 function nuevaVictoria(heroeUsuario) {
@@ -156,3 +173,17 @@ function getVictoriasTotales() {
     let victoriasTotales = localStorage.getItem('victoriasTotales') ? JSON.parse(localStorage.getItem('victoriasTotales')) : {};
     return victoriasTotales.total || 0;
 }
+function mostrarEnfrentamientoMensaje() {
+    const mensajeElement = document.getElementById('enfrentamientoMensaje');
+    mensajeElement.style.display = 'block';
+}
+
+function ocultarEnfrentamientoMensaje() {
+    const mensajeElement = document.getElementById('enfrentamientoMensaje');
+    mensajeElement.style.display = 'none';
+}
+tippy('.tippy', {
+    allowHTML: true,
+    placement: 'bottom',
+    animation: 'scale',
+});
