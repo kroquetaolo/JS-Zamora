@@ -1,3 +1,4 @@
+let allowClick = true;
 const superheroes = [
     {
         nombre: 'Iron Man',
@@ -69,7 +70,7 @@ const superheroes = [
 const rayo = {
     nombre: 'McQueen',
     poder: 100,
-    ataques: ['Cuchau', 'FIIIÑAAAUUUUUN', 'BRRRMMM BRRMMM']
+    ataques: ['Cuchau', 'FIIIÑAAAUUUUUN', 'BRRRMMM BRRMMM', 'super sensualidad']
 }
 
 const superheroesListaHTML = document.getElementById('listaSuperheroes');
@@ -93,10 +94,32 @@ for(const heroe of superheroes) {
     `;
 
     lista.addEventListener("click", function(){
-        PELEA(heroe);
-        const victoriasElement = document.getElementById(`victorias-${nombre}`);
-        victoriasElement.textContent = `Victorias: ${getVictoriasPorHeroe(nombre)}`;
-        victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
+        if(allowClick) {
+            allowClick = false;
+            PELEA(heroe)
+            .then((resultado) => {
+                Swal.fire({
+                    title: resultado.mensaje,
+                    text: resultado.descripcion,
+                    icon: resultado.icono,
+                    confirmButtonText: '¡Entendido!',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                });
+            }).catch((error) => {
+                Swal.fire({
+                    title: error.mensaje,
+                    text: error.descripcion,
+                    icon: error.icono,
+                    confirmButtonText: '¡Entendido!',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                });
+            });
+            const victoriasElement = document.getElementById(`victorias-${nombre}`);
+            victoriasElement.textContent = `Victorias: ${getVictoriasPorHeroe(nombre)}`;
+            victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
+        }
     });
 
     superheroesListaHTML.appendChild(lista)
@@ -121,30 +144,54 @@ function compararPoderes(heroe1, heroe2) {
     return { ganador, perdedor, usuario: usuarioGana };
 }
 
-function PELEA(heroeUsuario) {
+function PELEA(heroeUsuario, isRayo) {
+    const enfrentamientoPromise = new Promise((resolve, reject) => {
     const heroeConsola = randomHeroe(heroeUsuario);
-    const batalla = compararPoderes(heroeUsuario, heroeConsola);
+    const cambiaraRayo = Math.random() < 0.1;
+    const heroeDelJugador = cambiaraRayo ? rayo : heroeUsuario;
+    timeout = 6000;
+
+    const batalla = compararPoderes(heroeDelJugador, heroeConsola);
     const GANADOR = batalla.ganador;
     const PERDEDOR = batalla.perdedor;
     console.log(`${GANADOR.nombre} le ganará a ${PERDEDOR.nombre} ? ${batalla.usuario}`);
-    mostrarEnfrentamientoMensaje();
-    setTimeout(() => {
-        ocultarEnfrentamientoMensaje();
-        batalla.usuario ? 
-        (nuevaVictoria(heroeUsuario), 
+
+    if(heroeDelJugador == rayo){
         Swal.fire({
-            title: '¡Excelente!',
-            text: `${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`,
-            icon: 'success',
-            confirmButtonText: '¡Entendido!'
-        })) :
-        Swal.fire({
-            title: '¡OH no!',
-            text: `${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`,
-            icon: 'error',
-            confirmButtonText: '¡Entendido!'
+            imageUrl: `./assets/rayo.gif`,
+            title: "¡Algo increíble pasó!",
+            timer: timeout,
+            timerProgressBar: true,
+            text: `${rayo.nombre} se unió a la pelea y te va a proteger de tu oponente!`,
+            showConfirmButton: false, 
+            allowEscapeKey: false,
+            allowOutsideClick: false,
         });
-    }, 6000);
+    } else {
+        mostrarEnfrentamientoMensaje();
+    }
+    setTimeout(() => {
+            ocultarEnfrentamientoMensaje();
+            allowClick = true;
+            if (batalla.usuario) {
+                nuevaVictoria(heroeUsuario);
+                resolve({
+                    heroe: heroeDelJugador,
+                    mensaje: "¡Excelente!",
+                    descripcion: `${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`,
+                    icono: "success",
+                });
+            } else {
+                reject({
+                    mensaje: "¡OH no!",
+                    descripcion: `${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`,
+                    icono: "error",
+                });
+            }
+        }, timeout);
+    });
+    
+    return enfrentamientoPromise;
 }
 
 function nuevaVictoria(heroeUsuario) {
