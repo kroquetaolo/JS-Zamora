@@ -1,24 +1,27 @@
-
-let allowClick = true;
-
-let superheroes = []
-
-const rayo = {
-    nombre: 'McQueen',
-    poder: 100,
-    ataques: ['Cuchau', 'FIIIÑAAAUUUUUN', 'BRRRMMM BRRMMM', 'super sensualidad']
+const opciones = {
+    urlApi: `https://raw.githubusercontent.com/kroquetaolo/trampita/main/heroesMarvel.json`,
+    //profe perdón la trampa pero la API de marvel tenia muchas cosas y así es mas facil x'D solo quería las imagenes
+    //ademas que tiene limite de 3000 solicitudes :c igual fue divertido jugar con la API de marvel (mucho texto)
+    click: true,
+    habilitarClick: function() {
+        this.click = true;
+    },
+    deshabilitarClick: function() {
+        this.click = false;
+    },
+    salvadorPoderoso: {
+        nombre: 'McQueen',
+        poder: 100,
+        ataques: ['Cuchau', 'FIIIÑAAAUUUUUN', 'BRRRMMM BRRMMM', 'super sensualidad']
+    },
 }
 
+let superheroes = [];
 const superheroesListaHTML = document.getElementById('listaSuperheroes');
-
-let victoriasTotalesHTML = document.getElementById(`victoriasTotales`);
+const victoriasTotalesHTML = document.getElementById(`victoriasTotales`);
 victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`;
 
-const urlApi = `https://raw.githubusercontent.com/kroquetaolo/trampita/main/heroesMarvel.json`; 
-//profe perdón la trampa pero la API de marvel tenia muchas cosas y así es mas facil x'D solo quería las imagenes
-//ademas que tiene limite de 3000 solicitudes :c igual fue divertido jugar con la API de marvel (mucho texto)
-
-fetch(urlApi)
+fetch(opciones.urlApi)
     .then((response) => response.json())
     .then((responseData) =>{
         try {
@@ -29,7 +32,7 @@ fetch(urlApi)
         }
     })
     .catch(error => console.log(`Error de datos`, error))
-    .finally(()=> console.log(`proceso finalizado de ${urlApi}`));
+    .finally(()=> console.log(`proceso finalizado de ${opciones.urlApi}`));
 
 function cargarDatos(datos) {
     datos.forEach(element => {
@@ -61,8 +64,8 @@ function cargarHTML() {
         `;
     
         lista.addEventListener("click", function(){
-            if(allowClick) {
-                allowClick = false;
+            if(opciones.click) {
+                opciones.deshabilitarClick();
                 PELEA(heroe)
                 .then((resultado) => {
                     Swal.fire({
@@ -138,14 +141,14 @@ function PELEA(heroeUsuario) {
     const heroeConsola = randomHeroe(heroeUsuario);
     const cambiaraRayo = Math.random() < 0.1;
     const heroeDelJugador = cambiaraRayo ? rayo : heroeUsuario;
-    timeout = 6000;
+    const timeout = 6000;
 
     const batalla = compararPoderes(heroeDelJugador, heroeConsola);
     const GANADOR = batalla.ganador;
     const PERDEDOR = batalla.perdedor;
     console.log(`${GANADOR.nombre} le ganará a ${PERDEDOR.nombre} ? ${batalla.usuario}`);
 
-    if(heroeDelJugador == rayo){
+    if(heroeDelJugador == opciones.salvadorPoderoso){
         Swal.fire({
             imageUrl: `./assets/rayo.gif`,
             title: "¡Algo increíble pasó!",
@@ -157,7 +160,7 @@ function PELEA(heroeUsuario) {
             background: "#ffeb34",
             timer: timeout,
             timerProgressBar: true,
-            text: `${rayo.nombre} se unió a la pelea y te va a proteger de tu oponente!`,
+            text: `${opciones.salvadorPoderoso.nombre} se unió a la pelea y te va a proteger de tu oponente!`,
             showConfirmButton: false, 
             allowEscapeKey: false,
             allowOutsideClick: false,
@@ -167,7 +170,7 @@ function PELEA(heroeUsuario) {
     }
     setTimeout(() => {
             ocultarEnfrentamientoMensaje();
-            allowClick = true;
+            opciones.habilitarClick();
             if (batalla.usuario) {
                 nuevaVictoria(heroeUsuario);
                 resolve({
