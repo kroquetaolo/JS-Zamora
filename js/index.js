@@ -1,71 +1,7 @@
+
 let allowClick = true;
-const superheroes = [
-    {
-        nombre: 'Iron Man',
-        poder: 92,
-        ataques: ['Rayos repulsores', 'Vuelo', 'Armadura avanzada']
-    },
-    {
-        nombre: 'Thor',
-        poder: 95,
-        ataques: ['Mjolnir', 'Control sobre el clima', 'Fuerza sobrehumana']
-    },
-    {
-        nombre: 'Hulk',
-        poder: 90,
-        ataques: ['Fuerza descomunal', 'Regeneración', 'Resistencia']
-    },
-    {
-        nombre: 'SpiderMan',
-        poder: 85,
-        ataques: ['Telarañas', 'Sentido arácnido', 'Agilidad sobrehumana']
-    },
-    {
-        nombre: 'Capitan America',
-        poder: 88,
-        ataques: ['Escudo indestructible', 'Habilidades de combate', 'Resistencia mejorada']
-    },
-    {
-        nombre: 'BlackWidow',
-        poder: 82,
-        ataques: ['Habilidades de espionaje', 'Artes marciales', 'Táctica avanzada']
-    },
-    {
-        nombre: 'Doctor Strange',
-        poder: 93,
-        ataques: ['Hechicería', 'Manipulación del tiempo', 'Proyección astral']
-    },
-    {
-        nombre: 'BlackPanther',
-        poder: 87,
-        ataques: ['Habilidades de lucha', 'Agilidad', 'Sentido agudo']
-    },
-    {
-        nombre: 'Wolverine',
-        poder: 89,
-        ataques: ['Garras retráctiles', 'Factor curativo', 'Sentidos agudizados']
-    },
-    {
-        nombre: 'Vision',
-        poder: 94,
-        ataques: ['Fuerza sobrehumana', 'Disparo de energía', 'Inteligencia artificial avanzada']
-    },
-    {
-        nombre: 'AntMan',
-        poder: 83,
-        ataques: ['Manipulación del tamaño', 'Comunicación con hormigas', 'Sigilo']
-    },
-    {
-        nombre: 'Gamora',
-        poder: 86,
-        ataques: ['Habilidades de lucha', 'Maestría con armas', 'Resistencia aumentada']
-    },
-    {
-        nombre: 'StarLord',
-        poder: 84,
-        ataques: ['Habilidades tácticas', 'Manejo de armas', 'Tecnología avanzada']
-    }
-];
+
+let superheroes = []
 
 const rayo = {
     nombre: 'McQueen',
@@ -76,53 +12,81 @@ const rayo = {
 const superheroesListaHTML = document.getElementById('listaSuperheroes');
 
 let victoriasTotalesHTML = document.getElementById(`victoriasTotales`);
-victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
+victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`;
 
-for(const heroe of superheroes) {
-    const {nombre, poder, ataques} = heroe;
-    const lista = document.createElement('li');
-    const fuerza = poder >= 88 ? 'fuerte' : 'débil';
+const urlApi = `https://raw.githubusercontent.com/kroquetaolo/trampita/main/heroesMarvel.json`; 
+//profe perdón la trampa pero la API de marvel tenia muchas cosas y así es mas facil x'D solo quería las imagenes
+//ademas que tiene limite de 3000 solicitudes :c igual fue divertido jugar con la API de marvel (mucho texto)
 
-    lista.innerHTML = 
-    `
-    <button class="tippy" data-tippy-content="<strong>golpea ${fuerza}</strong> ">
-        <h2> ${nombre} </h2>
-        <h3> PODERES </h3>
-        <p class="ataques"> ${ataques.join(' ~ ')} </p>
-        <p class="victorias" id="victorias-${nombre}">Victorias: ${getVictoriasPorHeroe(nombre)}</p>
-    </button>
-    `;
+fetch(urlApi)
+    .then((response) => response.json())
+    .then((responseData) =>{
+        cargarDatos(responseData);
+        cargarHTML();
+    })
+    .catch(error => console.log(`Error de datos`, error))
+    .finally(()=> console.log(`proceso finalizado de ${urlApi}`));
 
-    lista.addEventListener("click", function(){
-        if(allowClick) {
-            allowClick = false;
-            PELEA(heroe)
-            .then((resultado) => {
-                Swal.fire({
-                    title: resultado.mensaje,
-                    text: resultado.descripcion,
-                    icon: resultado.icono,
-                    confirmButtonText: '¡Entendido!',
-                    allowEscapeKey: false,
-                    allowOutsideClick: false,
-                });
-            }).catch((error) => {
-                Swal.fire({
-                    title: error.mensaje,
-                    text: error.descripcion,
-                    icon: error.icono,
-                    confirmButtonText: '¡Entendido!',
-                    allowEscapeKey: false,
-                    allowOutsideClick: false,
-                });
-            });
-            const victoriasElement = document.getElementById(`victorias-${nombre}`);
-            victoriasElement.textContent = `Victorias: ${getVictoriasPorHeroe(nombre)}`;
-            victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
+function cargarDatos(datos) {
+    datos.forEach(element => {
+        let heroe = {
+            nombre: element.nombre,
+            poder: element.poder,
+            ataques: element.ataques,
+            imagenUrl: element.imagenUrl
         }
+        superheroes.push(heroe)
     });
+}
 
-    superheroesListaHTML.appendChild(lista)
+function cargarHTML() {
+    for(const heroe of superheroes) {
+        const {nombre, poder, ataques, imagenUrl} = heroe;
+        const lista = document.createElement('li');
+        const fuerza = poder >= 88 ? 'fuerte' : 'débil';
+
+        lista.innerHTML = 
+        `
+        <button>
+            <h2> ${nombre} </h2>
+            <img src="${imagenUrl}" alt="">
+            <h3> PODERES </h3>
+            <p class="ataques"> ${ataques.join(' ~ ')} </p>
+            <p class="victorias" id="victorias-${nombre}">Victorias: ${getVictoriasPorHeroe(nombre)}</p>
+        </button>
+        `;
+    
+        lista.addEventListener("click", function(){
+            if(allowClick) {
+                allowClick = false;
+                PELEA(heroe)
+                .then((resultado) => {
+                    Swal.fire({
+                        title: resultado.mensaje,
+                        text: resultado.descripcion,
+                        icon: resultado.icono,
+                        confirmButtonText: '¡Entendido!',
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                    });
+                }).catch((error) => {
+                    Swal.fire({
+                        title: error.mensaje,
+                        text: error.descripcion,
+                        icon: error.icono,
+                        confirmButtonText: '¡Entendido!',
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                    });
+                });
+                const victoriasElement = document.getElementById(`victorias-${nombre}`);
+                victoriasElement.textContent = `Victorias: ${getVictoriasPorHeroe(nombre)}`;
+                victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
+            }
+        });
+    
+        superheroesListaHTML.appendChild(lista)
+    }
 }
 
 function randomHeroe(heroe){
@@ -229,8 +193,3 @@ function ocultarEnfrentamientoMensaje() {
     const mensajeElement = document.getElementById('enfrentamientoMensaje');
     mensajeElement.style.display = 'none';
 }
-tippy('.tippy', {
-    allowHTML: true,
-    placement: 'bottom',
-    animation: 'scale',
-});

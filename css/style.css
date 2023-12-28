@@ -58,6 +58,10 @@ body {
 #listaSuperheroes h3 {
     color: #ff6933;
 }
+#listaSuperheroes img {
+    width: 300px;
+    border-radius: 1.25rem;
+}
 .ataques {
     color: #ede89d;
 }
