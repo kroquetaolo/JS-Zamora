@@ -37,12 +37,14 @@ body {
     border-radius: 5px;
     cursor: pointer;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #listaSuperheroes li button:hover{
     background-color: #303030;
+    transform: scale(110%);
 }
+
 #listaSuperheroes li button:hover img {
     filter: grayscale(0);
 }

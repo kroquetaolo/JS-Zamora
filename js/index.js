@@ -90,6 +90,23 @@ function cargarHTML() {
                         allowOutsideClick: false,
                     });
                 });
+            } else {
+                const enCurso = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    color: "#FF0000",
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                enCurso.fire({
+                    icon: "warning",
+                    title: "Ya hay un enfrentamiento en curso!"
+                });
             }
         });
     
