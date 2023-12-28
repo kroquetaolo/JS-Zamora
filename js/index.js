@@ -67,15 +67,22 @@ function cargarHTML() {
                 .then((resultado) => {
                     Swal.fire({
                         title: resultado.mensaje,
+                        imageUrl: resultado.imagen,
+                        imageHeight: 250,
                         text: resultado.descripcion,
                         icon: resultado.icono,
                         confirmButtonText: '¡Entendido!',
                         allowEscapeKey: false,
                         allowOutsideClick: false,
                     });
+                    const victoriasElement = document.getElementById(`victorias-${nombre}`);
+                    victoriasElement.textContent = `Victorias: ${getVictoriasPorHeroe(nombre)}`;
+                    victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
                 }).catch((error) => {
                     Swal.fire({
                         title: error.mensaje,
+                        imageUrl: error.imagen,
+                        imageHeight: 250,
                         text: error.descripcion,
                         icon: error.icono,
                         confirmButtonText: '¡Entendido!',
@@ -83,9 +90,6 @@ function cargarHTML() {
                         allowOutsideClick: false,
                     });
                 });
-                const victoriasElement = document.getElementById(`victorias-${nombre}`);
-                victoriasElement.textContent = `Victorias: ${getVictoriasPorHeroe(nombre)}`;
-                victoriasTotalesHTML.textContent = `Has ganado: ${getVictoriasTotales()} veces`
             }
         });
     
@@ -128,6 +132,12 @@ function PELEA(heroeUsuario) {
         Swal.fire({
             imageUrl: `./assets/rayo.gif`,
             title: "¡Algo increíble pasó!",
+            backdrop: `
+                    rgb(255, 0, 72,0.2) 
+                    url("https://i.gifer.com/WS2k.gif")
+                    top no-repeat
+            `,
+            background: "#ffeb34",
             timer: timeout,
             timerProgressBar: true,
             text: `${rayo.nombre} se unió a la pelea y te va a proteger de tu oponente!`,
@@ -145,13 +155,16 @@ function PELEA(heroeUsuario) {
                 nuevaVictoria(heroeUsuario);
                 resolve({
                     heroe: heroeDelJugador,
-                    mensaje: "¡Excelente!",
+                    imagen: heroeUsuario.imagenUrl,
+                    mensaje: "VICTORIA!",
                     descripcion: `${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`,
                     icono: "success",
                 });
             } else {
                 reject({
-                    mensaje: "¡OH no!",
+                    heroe: heroeConsola,
+                    imagen: GANADOR.imagenUrl,
+                    mensaje: "DERROTA!",
                     descripcion: `${GANADOR.nombre} destrozó a ${PERDEDOR.nombre} y ha ganado el duelo gracias a su ${ataqueRandom(GANADOR)}`,
                     icono: "error",
                 });
