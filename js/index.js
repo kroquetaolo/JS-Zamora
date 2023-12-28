@@ -21,8 +21,12 @@ const urlApi = `https://raw.githubusercontent.com/kroquetaolo/trampita/main/hero
 fetch(urlApi)
     .then((response) => response.json())
     .then((responseData) =>{
-        cargarDatos(responseData);
-        cargarHTML();
+        try {
+            cargarDatos(responseData);
+            cargarHTML();
+        } catch (error) {
+            console.error('Error durante la carga de datos o HTML:', error);
+        }
     })
     .catch(error => console.log(`Error de datos`, error))
     .finally(()=> console.log(`proceso finalizado de ${urlApi}`));
@@ -108,7 +112,7 @@ function compararPoderes(heroe1, heroe2) {
     return { ganador, perdedor, usuario: usuarioGana };
 }
 
-function PELEA(heroeUsuario, isRayo) {
+function PELEA(heroeUsuario) {
     const enfrentamientoPromise = new Promise((resolve, reject) => {
     const heroeConsola = randomHeroe(heroeUsuario);
     const cambiaraRayo = Math.random() < 0.1;
